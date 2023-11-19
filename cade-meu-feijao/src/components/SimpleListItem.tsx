@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import { List } from 'react-native-paper'
+import { List, MD3Colors } from 'react-native-paper'
 import React from 'react'
 
 export interface SimpleListItemProps {
@@ -12,10 +12,11 @@ export interface SimpleListItemProps {
 const SimpleListItem = (simpleListItem: SimpleListItemProps) => {
   return (
     <List.Item
+        style={{ borderBottomWidth: 1 }}
         onPress={simpleListItem.action}
         title={simpleListItem.title}
         description={simpleListItem.description}
-        left={props => <List.Icon {...props} icon={simpleListItem.icon} />}
+        left={props => <List.Icon {...props} icon={simpleListItem.icon} color={MD3Colors.primary30} />}
     />
   )
 }
