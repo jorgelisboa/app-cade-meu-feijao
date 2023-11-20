@@ -1,92 +1,22 @@
 import { View } from 'react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SimpleListItem from '../components/SimpleListItem'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FAB, Text } from 'react-native-paper'
-import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
-import SearchBar from '../components/SearchBar'
 import { ScrollView } from 'react-native-gesture-handler'
+import { getRefeicoes } from '../database/firestore'
 
 const ListaRefeicoes = ({navigation}: any) => {
-
-    const comidas = [
-        {
-          title: 'Feijão Carioca',
-          description: 'Feijão carioca da marca X',
-          icon: 'food'
-        },
-        {
-          title: 'Arroz Integral',
-          description: 'Arroz integral orgânico',
-          icon: 'food'
-        },
-        {
-          title: 'Salada de Frutas',
-          description: 'Salada fresca com frutas da estação',
-          icon: 'food'
-        },
-        {
-            title: 'Feijão Carioca',
-            description: 'Feijão carioca da marca X',
-            icon: 'food'
-          },
-          {
-            title: 'Arroz Integral',
-            description: 'Arroz integral orgânico',
-            icon: 'food'
-          },
-          {
-            title: 'Salada de Frutas',
-            description: 'Salada fresca com frutas da estação',
-            icon: 'food'
-          },
-          {
-            title: 'Feijão Carioca',
-            description: 'Feijão carioca da marca X',
-            icon: 'food'
-          },
-          {
-            title: 'Arroz Integral',
-            description: 'Arroz integral orgânico',
-            icon: 'food'
-          },
-          {
-            title: 'Salada de Frutas',
-            description: 'Salada fresca com frutas da estação',
-            icon: 'food'
-          },
-          {
-            title: 'Arroz Integral',
-            description: 'Arroz integral orgânico',
-            icon: 'food'
-          },
-          {
-            title: 'Salada de Frutas',
-            description: 'Salada fresca com frutas da estação',
-            icon: 'food'
-          },
-          {
-            title: 'Arroz Integral',
-            description: 'Arroz integral orgânico',
-            icon: 'food'
-          },
-          {
-            title: 'Salada de Frutas',
-            description: 'Salada fresca com frutas da estação',
-            icon: 'food'
-          },
-          {
-            title: 'Arroz Integral',
-            description: 'Arroz integral orgânico',
-            icon: 'food'
-          },
-          {
-            title: 'Salada de Frutas',
-            description: 'Salada fresca com frutas da estação',
-            icon: 'food'
-          },
-    ]
+    const [comidas, setIngredients] = useState<any[]>([])
     const [open, setState] = useState<boolean>(false)
+
+    useEffect(() => {
+        async function getFirebaseIngredients() {
+            setIngredients(await getRefeicoes())
+        }
+        getFirebaseIngredients()
+    }, [])
+
     return (
         <>
             <SafeAreaView>
@@ -101,13 +31,13 @@ const ListaRefeicoes = ({navigation}: any) => {
                     {/* Lista de itens */}
                     <View style={{ maxHeight: '85%',marginTop: 16 }}>
                         <ScrollView>
-                            {comidas.map((comida, index) => (
+                            {comidas?.map((comida, index) => (
                                 <SimpleListItem 
                                     icon='food' 
                                     key={index}
                                     title={comida.title} 
-                                    description={comida.description} 
-                                    action={() => console.log(comida.title)} />)
+                                    description={comida.created_at} 
+                                    action={() => console.log(comida.ingredients)} />)
                                 )
                             }
                         </ScrollView>
