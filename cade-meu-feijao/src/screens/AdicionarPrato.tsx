@@ -1,95 +1,128 @@
-import { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { TextInput, Button, List, Title, Caption, ToggleButton } from 'react-native-paper';
+import { useEffect, useState } from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { Button, Title, Caption } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import IngredienteComponent from '../components/IngredientListItem';
+import { Ingredient } from '../Models/Refeicao';
+import { getIngredients } from '../database/firestore';
 
 const AdicionarPrato = ({navigation}: any) => {
-  const [tituloPrato, setTituloPrato] = useState('');
-  const [nomeAlimento, setNomeAlimento] = useState('');
-  const [quantidadeAlimento, setQuantidadeAlimento] = useState('');
-  const [unidade, setUnidade] = useState('ml'); // Unidade padrão é ml
-  const [ingredientes, setIngredientes] = useState<any[]>([]);
+  const [ingredientes, setIngredientes] = useState<Ingredient[]>([]);
+  const [selectedIngredientes, setSelectedIngredientes] = useState<Ingredient[]>([]);
 
-  const adicionarIngrediente = () => {
-    if (nomeAlimento && quantidadeAlimento) {
-      const ingrediente = { ingredients: `${nomeAlimento}`, qntd: `${quantidadeAlimento} ${unidade}`}
-      setIngredientes([...ingredientes, ingrediente]);
-      setNomeAlimento('');
-      setQuantidadeAlimento('');
-      setUnidade('ml'); // Resetar a unidade para ml após adicionar um ingrediente
-      console.log(ingrediente)
+  const adicionarIngrediente = (ingredient: Ingredient) => {
+    // Verifica se o item já existe na lista de ingredientes selecionados
+    const ingredienteExistenteIndex = selectedIngredientes.findIndex(
+      (listIngredient) => listIngredient.ingredient === ingredient.ingredient
+    )
+    console.log(ingredient.quantity)
+
+    if (ingredienteExistenteIndex !== -1) {
+      // Pode adicionar lógica adicional se necessário
+      const updatedIngredientes = [...selectedIngredientes] // Cópia de array
+      updatedIngredientes[ingredienteExistenteIndex] = ingredient // Inserir onde tá a antiga quantidade
+      setSelectedIngredientes(updatedIngredientes) // Atualiza a array
+
+      return
     }
-  };
+
+    // SENÃO
+    // Adiciona o NOVO ingrediente à lista
+    setSelectedIngredientes([...selectedIngredientes, ingredient])
+    console.log('Ingrediente adicionado com sucesso.')
+  }
+
+  useEffect(() => {
+    async function getIngredientsList() {
+      const lista = await getIngredients()
+      if (lista != null) {
+        setIngredientes(lista.ingredients) 
+      }
+    }
+
+    getIngredientsList()
+  }, [])
 
   const finalizar = () => {
-    // Lógica para finalizar a ação
+    // Pega todos os itens selecionados na array e envia ao firebase
+    console.log(selectedIngredientes)
+
+    const estoqueAtualizado: Ingredient[] = [...ingredientes]
+    console.log('ESTOQUE ANTES')
+    console.log(estoqueAtualizado)
+  
+    // Subtrai as quantidades dos ingredientes da segunda array
+    selectedIngredientes.forEach((selectedIngredient) => {
+      const existingIngredientIndex = estoqueAtualizado.findIndex(
+        (listIngredient) => listIngredient.ingredient === selectedIngredient.ingredient
+      );
+  
+      if (existingIngredientIndex !== -1) {
+        console.log(estoqueAtualizado[existingIngredientIndex].quantity);
+        console.log('menos');
+        console.log(selectedIngredient.quantity);
+        console.log('------------------');
+  
+        // Garante que a subtração não resultará em valores negativos
+        estoqueAtualizado[existingIngredientIndex].quantity = estoqueAtualizado[existingIngredientIndex].quantity - selectedIngredient.quantity;
+      }
+    })
+  
+    console.log('ESTOQUE DEPOIS');
+    console.log(estoqueAtualizado);
+    atualizarFirebase(estoqueAtualizado);
   };
+  
+  
+  
+  
+
+  const atualizarFirebase = async (estoqueAtualizado: Ingredient[]) => {
+    // Envia o estoque novo
+
+
+    // Envia o que foi retirado do estoque
+
+
+  }
 
   return (
 
     <SafeAreaView>
-    <View style={styles.container}>
-      <Title style={styles.titulo}>Insira os alimentos usados</Title>
-      <Caption style={styles.descricao}>Insira o nome do alimento usado e sua quantidade, insira todos que precisar e depois finalize.</Caption>
+      <View style={styles.container}>
+        <Title style={styles.titulo}>Insira os alimentos usados</Title>
+        <Caption style={styles.descricao}>
+          Insira o nome do alimento usado e sua quantidade, insira todos que precisar e depois finalize.
+        </Caption>
 
-      <View style={styles.espacamento} />
+        <View style={styles.espacamento} />
 
-      <TextInput
-        label="Nome do prato"
-        value={tituloPrato}
-        onChangeText={(text) => setTituloPrato(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Nome do Alimento"
-        value={nomeAlimento}
-        onChangeText={(text) => setNomeAlimento(text)}
-        style={styles.input}
-      />
-
-      <View style={styles.row}>
-        <TextInput
-          label="Quantidade"
-          value={quantidadeAlimento}
-          onChangeText={(text) => setQuantidadeAlimento(text.replace(/[^0-9]/g, '').slice(0, 4))}
-          keyboardType="numeric"
-          style={styles.inputQuantidade}
+        <FlatList 
+          data={ingredientes}
+          keyExtractor={item => item.ingredient}
+          renderItem={({item}) => 
+            <IngredienteComponent 
+              ingredientData={item} 
+              onIngredientSelect={adicionarIngrediente} 
+              />
+            }
         />
 
-        <ToggleButton.Row
-          onValueChange={(value) => setUnidade(value)}
-          value={unidade}
-          style={styles.toggleButtonRow}
+        <Button 
+          mode="contained" 
+          onPress={finalizar} 
+          style={styles.botao}
         >
-          <ToggleButton icon="plus-circle" value="un" />
-          <ToggleButton icon="weight-gram" value="gr" />
-          <ToggleButton icon="weight-kilogram" value="kg" />
-          <ToggleButton icon="water" value="ml" />
-          <ToggleButton icon="bottle-wine" value="l" />
-        </ToggleButton.Row>
+          Finalizar
+        </Button>
+        <Button 
+          mode="outlined" 
+          onPress={() => navigation.navigate('ListaRefeicoes')} 
+          style={styles.botaoCancel}
+        >
+          Cancelar
+        </Button>
       </View>
-
-      <Button mode="contained" onPress={adicionarIngrediente} style={styles.botao}>
-        Inserir
-      </Button>
-
-      <ScrollView>
-        <List.Section>
-          <List.Subheader>Lista de Ingredientes</List.Subheader>
-          {ingredientes.map((item, index) => (
-            <List.Item key={index} title={`${item.ingredients} - ${item.qntd}`} />
-          ))}
-        </List.Section>
-      </ScrollView>
-
-      <Button mode="contained" onPress={finalizar} style={styles.botao}>
-        Finalizar
-      </Button>
-      <Button mode="outlined" onPress={() => navigation.navigate('ListaRefeicoes')} style={styles.botaoCancel}>
-        Cancelar
-      </Button>
-    </View>
     </SafeAreaView>
   )
 }

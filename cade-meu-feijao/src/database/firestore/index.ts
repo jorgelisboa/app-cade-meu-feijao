@@ -14,7 +14,7 @@ export async function getIngredients() {
     // Verifica se há algum documento na coleção
     if (snapshot.size > 0) {
       // Retorna o primeiro documento encontrado (você pode personalizar isso conforme necessário)
-      return snapshot.docs[0].data().ingredientes
+      return snapshot.docs[0].data()
     } else {
       console.log('Nenhum documento encontrado na coleção "ingredients".')
       return null

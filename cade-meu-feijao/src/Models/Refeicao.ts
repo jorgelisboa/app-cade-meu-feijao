@@ -1,6 +1,7 @@
-type Ingredient = {
+export type Ingredient = {
     ingredient: string
-    quatity: string
+    quantity: number
+    unit_of_measurement: string
 }
 
 export type Refeicao = {

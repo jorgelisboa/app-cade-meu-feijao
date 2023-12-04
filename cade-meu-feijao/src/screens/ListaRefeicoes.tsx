@@ -53,7 +53,8 @@ const ListaRefeicoes = ({navigation}: any) => {
                         actions={[
                             {
                                 icon: 'food',
-                                label: 'Criar prato',
+                                label: 'Retirada do estoque',
+                                color: '#9A3824',
                                 onPress: () => {
                                     setState(false)
                                     navigation.navigate('AdicionarPrato')
@@ -61,7 +62,8 @@ const ListaRefeicoes = ({navigation}: any) => {
                             },
                             {
                                 icon: 'food-apple',
-                                label: 'Criar ingrediente',
+                                label: 'Recebimento no estoque',
+                                color: '#9A3824',
                                 onPress: () => {
                                     setState(false)
                                     navigation.navigate('AdicionarItem')

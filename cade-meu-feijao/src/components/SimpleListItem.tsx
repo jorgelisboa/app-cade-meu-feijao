@@ -16,7 +16,7 @@ const SimpleListItem = (simpleListItem: SimpleListItemProps) => {
         onPress={simpleListItem.action}
         title={simpleListItem.title}
         description={simpleListItem.description}
-        left={props => <List.Icon {...props} icon={simpleListItem.icon} color={MD3Colors.primary30} />}
+        left={props => <List.Icon {...props} icon={simpleListItem.icon} />}
     />
   )
 }
