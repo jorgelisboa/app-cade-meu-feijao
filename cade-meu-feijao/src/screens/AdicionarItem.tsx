@@ -35,10 +35,6 @@ const AdicionarItem = ({navigation}: any) => {
         console.log('Ingrediente adicionado com sucesso.')
   }
 
-  const finalizar = () => {
-    // Lógica para finalizar a ação
-  }
-
   return (
     <>
       <SafeAreaView>

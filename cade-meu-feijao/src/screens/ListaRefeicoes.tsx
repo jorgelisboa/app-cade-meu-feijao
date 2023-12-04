@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { FlatList, View } from 'react-native'
 import { useEffect, useState } from 'react'
 import SimpleListItem from '../components/SimpleListItem'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -10,11 +10,14 @@ import { Ingredient } from '../Models/Refeicao'
 const ListaRefeicoes = ({navigation}: any) => {
     const [comidas, setIngredients] = useState<Array<Ingredient>>([])
     const [open, setState] = useState<boolean>(false)
-
+    const [isRefreshing, setRefreshing] = useState<boolean>(false)
+    async function getFirebaseIngredients() {
+        setRefreshing(true)
+        setIngredients(await getEstoque())
+        setRefreshing(false)
+    }
+    
     useEffect(() => {
-        async function getFirebaseIngredients() {
-            setIngredients(await getEstoque())
-        }
         getFirebaseIngredients()
     }, [])
 
@@ -31,21 +34,21 @@ const ListaRefeicoes = ({navigation}: any) => {
                     </View>
                     {/* Lista de itens */}
                     <View style={{ maxHeight: '85%',marginTop: 16 }}>
-                        <ScrollView>
-
-                            <Text>
-                                LOGO TEREMOS SEU HISTÓRICO, CONTATE-NOS CASO QUEIRA RECEBER SEU RELATÓRIO
-                            </Text>
-                            {comidas?.map((comida: Ingredient, index: number) => (
-                                <SimpleListItem 
-                                    icon='food' 
-                                    key={index}
-                                    title={comida.ingredient} 
-                                    description={comida.quantity.toString() + comida.unit_of_measurement} 
-                                    action={() => console.log(comida.unit_of_measurement)} />)
-                                )
+                        <Text>
+                            LOGO TEREMOS SEU HISTÓRICO, CONTATE-NOS CASO QUEIRA RECEBER SEU RELATÓRIO
+                        </Text>
+                        <FlatList 
+                            data={comidas}
+                            refreshing={isRefreshing}
+                            onRefresh={() => getFirebaseIngredients()}
+                            renderItem={({item}) => <SimpleListItem 
+                                icon='food' 
+                                key={item.ingredient}
+                                title={item.ingredient} 
+                                description={item.quantity.toString() + item.unit_of_measurement} 
+                                action={() => console.log(item.unit_of_measurement)} />
                             }
-                        </ScrollView>
+                        />
                     </View>
                 </View>
             </SafeAreaView>
