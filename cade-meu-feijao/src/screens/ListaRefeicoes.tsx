@@ -4,15 +4,16 @@ import SimpleListItem from '../components/SimpleListItem'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FAB, Text } from 'react-native-paper'
 import { ScrollView } from 'react-native-gesture-handler'
-import { getRefeicoes } from '../database/firestore'
+import { getEstoque } from '../database/firestore'
+import { Ingredient } from '../Models/Refeicao'
 
 const ListaRefeicoes = ({navigation}: any) => {
-    const [comidas, setIngredients] = useState<any[]>([])
+    const [comidas, setIngredients] = useState<Array<Ingredient>>([])
     const [open, setState] = useState<boolean>(false)
 
     useEffect(() => {
         async function getFirebaseIngredients() {
-            setIngredients(await getRefeicoes())
+            setIngredients(await getEstoque())
         }
         getFirebaseIngredients()
     }, [])
@@ -23,21 +24,25 @@ const ListaRefeicoes = ({navigation}: any) => {
                 <View style={{ padding: 16 }}>
                     {/* PESQUISA */}
                     <View>
-                        <Text variant='headlineSmall' style={{ fontWeight: 'bold' }}>Últimas refeições preparadas</Text>
+                        <Text variant='headlineSmall' style={{ fontWeight: 'bold' }}>Seu estoque</Text>
                         <Text variant='titleMedium' style={{ color: 'grey' }}>
-                            Veja todas refeições preparadas logo abaixo, ou crie novas refeições/ingredientes.
+                            Veja todos ingredientes e suas quantidades logo abaixo, ou crie novos ingredientes.
                         </Text>
                     </View>
                     {/* Lista de itens */}
                     <View style={{ maxHeight: '85%',marginTop: 16 }}>
                         <ScrollView>
-                            {comidas?.map((comida, index) => (
+
+                            <Text>
+                                LOGO TEREMOS SEU HISTÓRICO, CONTATE-NOS CASO QUEIRA RECEBER SEU RELATÓRIO
+                            </Text>
+                            {comidas?.map((comida: Ingredient, index: number) => (
                                 <SimpleListItem 
                                     icon='food' 
                                     key={index}
-                                    title={comida.title} 
-                                    description={comida.created_at} 
-                                    action={() => console.log(comida.ingredients)} />)
+                                    title={comida.ingredient} 
+                                    description={comida.quantity.toString() + comida.unit_of_measurement} 
+                                    action={() => console.log(comida.unit_of_measurement)} />)
                                 )
                             }
                         </ScrollView>

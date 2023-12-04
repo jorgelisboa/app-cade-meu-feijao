@@ -4,7 +4,9 @@ import { Button, Title, Caption } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IngredienteComponent from '../components/IngredientListItem';
 import { Ingredient } from '../Models/Refeicao';
-import { getIngredients } from '../database/firestore';
+import { adicionarAoEstoque, getEstoque, insertUsedIngredients } from '../database/firestore';
+import { format } from 'date-fns';
+import { Timestamp } from 'firebase/firestore';
 
 const AdicionarPrato = ({navigation}: any) => {
   const [ingredientes, setIngredientes] = useState<Ingredient[]>([]);
@@ -34,9 +36,9 @@ const AdicionarPrato = ({navigation}: any) => {
 
   useEffect(() => {
     async function getIngredientsList() {
-      const lista = await getIngredients()
+      const lista = await getEstoque()
       if (lista != null) {
-        setIngredientes(lista.ingredients) 
+        setIngredientes(lista) 
       }
     }
 
@@ -59,8 +61,8 @@ const AdicionarPrato = ({navigation}: any) => {
   
       if (existingIngredientIndex !== -1) {
         console.log(estoqueAtualizado[existingIngredientIndex].quantity);
-        console.log('menos');
-        console.log(selectedIngredient.quantity);
+        console.log('menos')
+        console.log(selectedIngredient.quantity)
         console.log('------------------');
   
         // Garante que a subtração não resultará em valores negativos
@@ -70,24 +72,24 @@ const AdicionarPrato = ({navigation}: any) => {
   
     console.log('ESTOQUE DEPOIS');
     console.log(estoqueAtualizado);
-    atualizarFirebase(estoqueAtualizado);
-  };
-  
-  
-  
-  
+    atualizarFirebase(estoqueAtualizado)
+
+    navigation.navigate('ListaRefeicoes')
+  }
 
   const atualizarFirebase = async (estoqueAtualizado: Ingredient[]) => {
     // Envia o estoque novo
-
-
+    console.log('ESTOQUE ATUALIZADO')
+    console.log(estoqueAtualizado)
+    await adicionarAoEstoque(estoqueAtualizado)
+    
     // Envia o que foi retirado do estoque
-
-
+    console.log('ITENS RETIRADOS')
+    console.log(selectedIngredientes)
+    await insertUsedIngredients(Timestamp.now().toDate().toString(), selectedIngredientes)
   }
 
   return (
-
     <SafeAreaView>
       <View style={styles.container}>
         <Title style={styles.titulo}>Insira os alimentos usados</Title>
