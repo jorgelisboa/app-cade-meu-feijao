@@ -59,8 +59,8 @@ const AdicionarItem = ({navigation}: any) => {
             <Menu.Item onPress={() => {setSelectedUnit('unidade'); setMenuVisible(false);}} title="Unidade" />
             <Menu.Item onPress={() => {setSelectedUnit('ml'); setMenuVisible(false);}} title="ml" />
             <Menu.Item onPress={() => {setSelectedUnit('gr'); setMenuVisible(false);}} title="gr" />
-            <Menu.Item onPress={() => {setSelectedUnit('l'); setMenuVisible(false);}} title="L" />
-            <Menu.Item onPress={() => {setSelectedUnit('kg'); setMenuVisible(false);}} title="Kg" />
+            {/* <Menu.Item onPress={() => {setSelectedUnit('l'); setMenuVisible(false);}} title="L" />
+            <Menu.Item onPress={() => {setSelectedUnit('kg'); setMenuVisible(false);}} title="Kg" /> */}
           </Menu>
           <Button mode="contained" onPress={cadastrarIngrediente} style={styles.botao}>
             Salvar e sair
