@@ -37,9 +37,8 @@ const AdicionarPrato = ({navigation}: any) => {
   useEffect(() => {
     async function getIngredientsList() {
       const lista = await getEstoque()
-      if (lista != null) {
-        setIngredientes(lista) 
-      }
+      lista.sort((a:Ingredient, b: Ingredient) => a.ingredient.localeCompare(b.ingredient))
+      if (lista != null) setIngredientes(lista)
     }
 
     getIngredientsList()
@@ -94,7 +93,7 @@ const AdicionarPrato = ({navigation}: any) => {
       <View style={styles.container}>
         <Title style={styles.titulo}>Insira os alimentos usados</Title>
         <Caption style={styles.descricao}>
-          Insira o nome do alimento usado e sua quantidade, insira todos que precisar e depois finalize.
+          Clique no alimento usado e insira a quantidade usada, insira todos que precisar e depois finalize.
         </Caption>
 
         <View style={styles.espacamento} />
@@ -142,11 +141,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   titulo: {
-    fontSize: 24,
+    fontSize: 32,
     marginBottom: 8,
   },
   descricao: {
     color: 'grey',
+    fontSize: 16,
     marginBottom: 16,
   },
   espacamento: {

@@ -13,7 +13,11 @@ const ListaRefeicoes = ({navigation}: any) => {
     const [isRefreshing, setRefreshing] = useState<boolean>(false)
     async function getFirebaseIngredients() {
         setRefreshing(true)
-        setIngredients(await getEstoque())
+        let array = await getEstoque()
+        
+        setIngredients(
+            array.sort((a:Ingredient, b: Ingredient) => a.ingredient.localeCompare(b.ingredient))
+        )
         setRefreshing(false)
     }
     
